@@ -127,6 +127,7 @@ async function clickStart(e) {
   {
     e.preventDefault();
     $('#result').html('');
+    started = true;
   
   }
 
@@ -178,7 +179,8 @@ async function clickStart(e) {
     }
     response = await getMessage(currentChat, youMsg);
     saveApiKey();
-    started = true;
+    
+    
     checkComponents();
 
   }
@@ -233,8 +235,9 @@ $(function () {
 
   $(document).on('click', '#clearBtn',  function (e) {
     e.preventDefault();
-    clearTimeout(timerOut);
     started = false;
+    clearTimeout(timerOut);
+    
     checkComponents();
    
     return false;
