@@ -207,7 +207,10 @@ async function clickStart(e) {
   lastMessage = respMessage;
 
   $('#loadingDiv').hide();
-  timerOut = setTimeout(()=>{clickStart(null);},1000);
+  if(started)
+  {
+    timerOut = setTimeout(()=>{clickStart(null);},1000);
+  }
   return false;
 }
 
