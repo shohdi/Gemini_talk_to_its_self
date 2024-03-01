@@ -8,6 +8,10 @@ const {
 } = require("@google/generative-ai");
 
 let chat = null;
+let chat2 = null;
+let lastChate = null;
+let started = false;
+let lastMessage = null;
 
 const MODEL_NAME = "gemini-1.0-pro";
 
@@ -17,7 +21,7 @@ async function runChat(API_KEY) {
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
   const generationConfig = {
-    temperature: 1,
+    temperature: 0.9,
     topK: 1,
     topP: 1,
     maxOutputTokens: 2048,
@@ -91,6 +95,23 @@ function checkApiKey()
    }
 }
 
+function checkComponents()
+{
+   if(started)
+   {
+     $('#topicStart').hide();
+
+   }
+   else
+   {
+    $('#topicStart').show();
+    chat=null;
+    chat2=null;
+    lastChate = null;
+    lastMessage = null;
+   }
+}
+
 function saveApiKey()
 {
   
@@ -100,83 +121,105 @@ function saveApiKey()
 }
 
 
+async function clickStart(e) {
+  if (e != null)
+  {e.preventDefault();}
+  if(e != null)
+  {
+  $('#loadingDiv').show();
+  }
+  var apiKey = $('#api_key').val();
+  if (chat == null) {
+    try {
+      chat = await runChat(apiKey);
+      chat2 = await runChat(apiKey);
+      
+    }
+    catch (ex) {
+      
+      started = false;
+      checkComponents();
+      $('#result').html($('#result').html() + '<br />Error : <br />' + ex.toString() + '<br />');
+      $('#loadingDiv').hide();
+      return false;
+    }
+
+  }
+  var youMsg = $('#comment').val();
+  if (lastMessage != null)
+  {
+    youMsg = lastMessage;
+  }
+
+  
+  $('#comment').val('');
+  if(e != null)
+  {
+  $('#result').html($('#result').html() + '<br />Topic : <br />' + youMsg + '<br />');
+  }
+  let respMessage = '';
+  try {
+    let currentChat = null;
+    if(lastChate == null || lastChate == "Gemini Pro 2")
+    {
+      currentChat = chat;
+      lastChate = "Gemini Pro 1";
+    }
+    else
+    {
+        currentChat = chat2;
+        lastChate = "Gemini Pro 2";
+    }
+    response = await getMessage(currentChat, youMsg);
+    saveApiKey();
+    started = true;
+    checkComponents();
+
+  }
+  catch (ex) {
+    started = false;
+    checkComponents();
+    $('#result').html($('#result').html() + '<br />Error : <br />' + ex.toString() + '<br />');
+    $('#loadingDiv').hide();
+    return false;
+  }
+  if (response.candidates != null && response.candidates.length != null) {
+    for (let i = 0; i < response.candidates.length; i++) {
+      let candContent = response.candidates[i].content;
+      if (candContent != null && candContent.parts != null && candContent.parts.length != null) {
+        for (let j = 0; j < candContent.parts.length; j++) {
+          respMessage = respMessage + '<br />' + encode(candContent.parts[j].text);
+        }
+
+      }
+    }
+  }
+
+
+
+  $('#result').html($('#result').html() + '<br />' + lastChate + ' : <br />' + respMessage + '<br />');
+  lastMessage = respMessage;
+
+  $('#loadingDiv').hide();
+  setTimeout(()=>{clickStart(null);},1000);
+  return false;
+}
+
+
 $(function () {
 
   checkApiKey();
 
-  $(document).on('click', '#sendBtn', async function (e) {
+  $(document).on('click', '#sendBtn', clickStart);
+
+
+
+
+  $(document).on('click', '#clearBtn',  function (e) {
     e.preventDefault();
-    $('#loadingDiv').show();
-    var apiKey = $('#api_key').val();
-    if (chat == null) {
-      try {
-        chat = await runChat(apiKey);
-        
-      }
-      catch (ex) {
-        chat = null;
-        $('#result').html($('#result').html() + '<br />Error : <br />' + ex.toString() + '<br />');
-        $('#loadingDiv').hide();
-        return false;
-      }
-
-    }
-    var youMsg = $('#comment').val();
-    $('#comment').val('');
-    $('#result').html($('#result').html() + '<br />You : <br />' + youMsg + '<br />');
-    let respMessage = '';
-    try {
-      response = await getMessage(chat, youMsg);
-      saveApiKey();
-
-    }
-    catch (ex) {
-      $('#result').html($('#result').html() + '<br />Error : <br />' + ex.toString() + '<br />');
-      $('#loadingDiv').hide();
-      return false;
-    }
-    if (response.candidates != null && response.candidates.length != null) {
-      for (let i = 0; i < response.candidates.length; i++) {
-        let candContent = response.candidates[i].content;
-        if (candContent != null && candContent.parts != null && candContent.parts.length != null) {
-          for (let j = 0; j < candContent.parts.length; j++) {
-            respMessage = respMessage + '<br />' + encode(candContent.parts[j].text);
-          }
-
-        }
-      }
-    }
-
-
-
-    $('#result').html($('#result').html() + '<br />' + MODEL_NAME + ' : <br />' + respMessage + '<br />');
-
-    $('#loadingDiv').hide();
-    return false;
-  });
-
-
-  $(document).on('click', '#clearBtn', async function (e) {
-    e.preventDefault();
-    $('#loadingDiv').show();
-    var apiKey = $('#api_key').val();
-
-
-    try {
-      chat = await runChat(apiKey);
-    }
-    catch (ex) {
-      chat = null;
-      $('#result').html($('#result').html() + '<br />Error : <br />' + ex.toString() + '<br />');
-      $('#loadingDiv').hide();
-      return false;
-    }
-
-
-    $('#result').html('');
-
-
-    $('#loadingDiv').hide();
+    started = false;
+    checkComponents();
+   
     return false;
   });
 });
