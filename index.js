@@ -152,8 +152,13 @@ async function clickStart(e) {
     }
 
   }
-  var youMsg = $('#comment').val();
-  if (lastMessage != null)
+  var youMsg = "";
+  if(e != null)
+  {
+
+    youMsg = $('#comment').val();
+  }
+  else
   {
     youMsg = lastMessage;
   }
