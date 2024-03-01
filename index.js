@@ -12,6 +12,7 @@ let chat2 = null;
 let lastChate = null;
 let started = false;
 let lastMessage = null;
+let timerOut = null;
 
 const MODEL_NAME = "gemini-1.0-pro";
 
@@ -123,7 +124,12 @@ function saveApiKey()
 
 async function clickStart(e) {
   if (e != null)
-  {e.preventDefault();}
+  {
+    e.preventDefault();
+    $('#result').html('');
+  
+  }
+
   if(e != null)
   {
   $('#loadingDiv').show();
@@ -201,7 +207,7 @@ async function clickStart(e) {
   lastMessage = respMessage;
 
   $('#loadingDiv').hide();
-  setTimeout(()=>{clickStart(null);},1000);
+  timerOut = setTimeout(()=>{clickStart(null);},1000);
   return false;
 }
 
@@ -217,6 +223,7 @@ $(function () {
 
   $(document).on('click', '#clearBtn',  function (e) {
     e.preventDefault();
+    clearTimeout(timerOut);
     started = false;
     checkComponents();
    
