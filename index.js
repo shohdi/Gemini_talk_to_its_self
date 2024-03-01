@@ -13,6 +13,7 @@ let lastChate = null;
 let started = false;
 let lastMessage = null;
 let timerOut = null;
+let lang = "default";
 
 const MODEL_NAME = "gemini-1.0-pro";
 
@@ -155,8 +156,17 @@ async function clickStart(e) {
   var youMsg = "";
   if(e != null)
   {
-
-    youMsg = $('#comment').val();
+    
+     if(lang == "ar" || lang == "en")
+     { 
+        youMsg = $('#before' + lang).val() + ' ' +  $('#comment').val()  + ' ' + $('#after' + lang).val()  ;
+     }
+     else
+     {
+        youMsg = $('#comment').val();
+     }
+    
+    
   }
   else
   {
@@ -233,7 +243,20 @@ $(function () {
 
   checkApiKey();
 
-  $(document).on('click', '#sendBtn', clickStart);
+  $(document).on('click', '#sendBtn',async function(e){
+    lang = "en";
+    await clickStart(e);
+  }  );
+
+  $(document).on('click', '#sendBtn1',async function(e){
+    lang = "ar";
+    await clickStart(e);
+  }  );
+
+  $(document).on('click', '#sendBtn2',async function(e){
+    lang = "default";
+    await clickStart(e);
+  }  );
 
 
 
