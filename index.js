@@ -205,7 +205,14 @@ async function clickStart(e) {
 
   $('#result').html($('#result').html() + '<br />' + lastChate + ' : <br />' + respMessage + '<br />');
   lastMessage = respMessage;
-
+  try
+  {
+    $("#result").scrollTop($("#result")[0].scrollHeight);
+  }
+  catch(ex)
+  {
+    
+  }
   $('#loadingDiv').hide();
   if(started)
   {
