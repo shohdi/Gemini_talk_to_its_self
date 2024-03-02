@@ -3,6 +3,7 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
     <title>Gemini Chat and its self</title>
     <script src="jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="bootstrap.min.css" />
@@ -84,7 +85,15 @@
                     <textarea id="comment" rows="5" class="form-control" contenteditable="true"></textarea>
                 </div>
                 <div class="col-md-12 form-group">
-                    <a href="" class="btn btn-success" id="sendBtn" style="cursor: pointer;">Start</a>
+                    <input type="hidden" id="beforear" value="اريدك ان تسأل سؤال واحد في كل مرة عن" />
+                    <input type="hidden" id="afterar" value="وأنا سأجاوبك" />
+                    <input type="hidden" id="beforeen" value="I want you to ask one question at a time about" />
+                    <input type="hidden" id="afteren" value="and I will answer you" />
+                    <a href="" class="btn btn-success" id="sendBtn" style="cursor: pointer;">Start English</a>
+                    &nbsp;
+                    <a href="" class="btn btn-success" id="sendBtn1" style="cursor: pointer;">Start Arabic</a>
+                    &nbsp;
+                    <a href="" class="btn btn-success" id="sendBtn2" style="cursor: pointer;">Start without change</a>
                 </div>
             </div>
             <div class="row">
